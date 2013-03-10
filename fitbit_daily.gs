@@ -1,8 +1,9 @@
-// This script will pull down your fitbit data
-// and push it into a spreadsheet
-// Units are metric (kg, km) unless otherwise noted
-// Suggestions/comments/improvements?  Let me know loghound@gmail.com
-//
+// Based on the code originally found in: https://github.com/loghound/Fitbit-for-Google-App-Script
+
+// This script will pull down your daily fitbit data and
+// insert a new record into a Google spreadsheet. The script is 
+// designed to be run as a triggered script, within an existing 
+// spreadsheet once each day.
 //
 /**** Length of time to look at.
  * From fitbit documentation values are 
@@ -33,9 +34,10 @@ function refreshTimeSeries() {
     }
 
     var user = authorize();
+
+    // Assuming this script is already associated with a spreadsheet
     var doc = SpreadsheetApp.getActiveSpreadsheet();
     var range = SpreadsheetApp.getActiveSpreadsheet().getLastRow();
-    // Logger.log(range);
   
     var options =
     {
@@ -44,30 +46,19 @@ function refreshTimeSeries() {
         "method": "GET",
     };
 
-    // get inspired here http://wiki.fitbit.com/display/API/API-Get-Time-Series
-    //var activities = ["activities/log/steps", "activities/log/distance", "activities/log/activeScore", "activities/log/calories",
-    //"activities/log/minutesSedentary", "activities/log/minutesLightlyActive", "activities/log/minutesFairlyActive", "activities/log/minutesVeryActive",
-    //"sleep/timeInBed", "sleep/minutesAsleep", "sleep/awakeningsCount",
-    //"foods/log/caloriesIn"]
-  
     var index = 0;
     range++;
     var cell = doc.getRange("a" + range);
-    var message = "<p>FitBit activity for ";
-    var altMessage = "";
-
-    // First collect activity
+    
+    // First collect activity data for today
     var activities = ["activities"]
       
     for (var activity in activities) {
         var today = new Date();
-        //today.setDate(today.getDate() -1);            
         var dateString = Utilities.formatDate(today, "EST", "yyyy-MM-dd");
         var msgDate = Utilities.formatDate(today, "EST", "MM/dd/yyyy");
-        //Logger.log(dateString);
       
         var currentActivity = activities[activity];
-        //Logger.log(currentActivity);
      
         try {
             var result = UrlFetchApp.fetch("http://api.fitbit.com/1/user/-/" + currentActivity + "/date/" + dateString
@@ -103,10 +94,6 @@ function refreshTimeSeries() {
                 else
                 {
                   cell.offset(index, count).setValue(sValue);
-                  if (sKey == "steps")
-                  {
-                    altMessage = msgDate + ",Fitbit,Walking,Steps," + sValue;
-                  }
                 }
                 count++;
               }
