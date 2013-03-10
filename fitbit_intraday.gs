@@ -1,7 +1,9 @@
-// This script will pull down your fitbit data
-// and push it into a spreadsheet
-// Units are metric (kg, km) unless otherwise noted
-// Suggestions/comments/improvements?  Let me know loghound@gmail.com
+// Based on the code originally found in: https://github.com/loghound/Fitbit-for-Google-App-Script
+
+// This script will pull down your "intraday" fitbit data
+// and push it into a spreadsheet; this requires that you have been granted permission
+// to intraday API. This has to be requested from FitBit and is granted on a case-by-case
+// basis
 //
 //
 /**** Length of time to look at.
@@ -35,7 +37,6 @@ function refreshTimeSeries() {
     var user = authorize();
     var doc = SpreadsheetApp.getActiveSpreadsheet();
     var range = SpreadsheetApp.getActiveSpreadsheet().getLastRow();
-    Logger.log(range);
   
     var options =
     {
@@ -43,17 +44,10 @@ function refreshTimeSeries() {
         "oAuthUseToken": "always",
         "method": "GET",
     };
-
-    // get inspired here http://wiki.fitbit.com/display/API/API-Get-Time-Series
-    //var activities = ["activities/log/steps", "activities/log/distance", "activities/log/activeScore", "activities/log/calories",
-    //"activities/log/minutesSedentary", "activities/log/minutesLightlyActive", "activities/log/minutesFairlyActive", "activities/log/minutesVeryActive",
-    //"sleep/timeInBed", "sleep/minutesAsleep", "sleep/awakeningsCount",
-    //"foods/log/caloriesIn"]
   
     var index = 0;
     range++;
     var cell = doc.getRange("a" + range);
-
   
     var activities = ["activities/log/steps"]
       
